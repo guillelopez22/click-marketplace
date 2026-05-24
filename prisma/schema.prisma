@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum City {
+  TGU
+  SPS
+}
+
+enum ProductSource {
+  AMAZON
+  LOCAL
+}
+
+enum OrderStatus {
+  // Amazon import flow
+  ORDERED
+  MIAMI_WAREHOUSE
+  IN_TRANSIT_HN
+  CUSTOMS
+  OUT_FOR_DELIVERY
+  DELIVERED
+  // Local delivery flow (ORDERED + DELIVERED shared)
+  RIDER_ASSIGNED
+  PICKING_UP
+  ON_THE_WAY
+}
+
+// ─── Auth.js v5 (Prisma Adapter) ──────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Core Models ──────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  password      String?   // bcrypt hash; null for OAuth users
+  city          City      @default(TGU)
+  address       String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+
+  accounts Account[]
+  sessions Session[]
+  orders   Order[]
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  priceUSD    Decimal?      @db.Decimal(10, 2) // null for LOCAL products
+  priceHNL    Decimal       @db.Decimal(10, 2) // source of truth for all cart math
+  sourceType  ProductSource
+  merchant    String?       // "Amazon", "Super Coop", "Diunsa", etc.
+  weightLb    Float?
+  etaDays     Int
+  images      String[]
+  category    String
+  stock       Int           @default(0)
+  featured    Boolean       @default(false)
+  active      Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+
+  orderItems OrderItem[]
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  subtotalHNL Decimal     @db.Decimal(10, 2)
+  deliveryFee Decimal     @db.Decimal(10, 2)
+  importFee   Decimal     @db.Decimal(10, 2) @default(0)
+  taxes       Decimal     @db.Decimal(10, 2)
+  totalHNL    Decimal     @db.Decimal(10, 2)
+  status      OrderStatus @default(ORDERED)
+  address     String      // delivery address snapshot — no card data ever stored
+  city        City
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user          User               @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+  statusEvents  OrderStatusEvent[]
+  riderTracking RiderTracking?
+}
+
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String
+  productId        String
+  qty              Int
+  priceSnapshotHNL Decimal @db.Decimal(10, 2) // price at order time, never recalculated
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model OrderStatusEvent {
+  id      String      @id @default(cuid())
+  orderId String
+  status  OrderStatus
+  message String?
+  at      DateTime    @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model RiderTracking {
+  id        String   @id @default(cuid())
+  orderId   String   @unique // singleton per order
+  lat       Float
+  lng       Float
+  heading   Float    @default(0)
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}

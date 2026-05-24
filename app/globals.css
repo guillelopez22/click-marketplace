@@ -1,0 +1,227 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+/* ─── CLICK Design System — always dark ─────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --cl-canvas:           #09090B;
+  --cl-surface:          #18181B;
+  --cl-surface-raised:   #27272A;
+  --cl-surface-overlay:  rgba(9, 9, 11, 0.85);
+
+  /* Text */
+  --cl-text-primary:     #FAFAFA;
+  --cl-text-secondary:   #A1A1AA;
+  --cl-text-muted:       #52525B;
+
+  /* Borders */
+  --cl-border:           rgba(63, 63, 70, 0.60);
+  --cl-border-subtle:    rgba(63, 63, 70, 0.25);
+
+  /* Accent — Electric Blue, single accent, no exceptions */
+  --cl-accent:           #1D6FF2;
+  --cl-accent-hover:     #1A5FD4;
+  --cl-accent-subtle:    rgba(29, 111, 242, 0.12);
+  --cl-accent-ring:      rgba(29, 111, 242, 0.40);
+
+  /* Semantic — status only, never decorative */
+  --cl-success:          #16A34A;
+  --cl-success-subtle:   rgba(22, 163, 74, 0.12);
+  --cl-warning:          #CA8A04;
+  --cl-warning-subtle:   rgba(202, 138, 4, 0.12);
+  --cl-neutral-badge:    #3F3F46;
+
+  /* Map */
+  --cl-rider-dot:        #1D6FF2;
+  --cl-route-line:       rgba(29, 111, 242, 0.35);
+  --cl-map-panel:        rgba(9, 9, 11, 0.80);
+
+  /* ── shadcn token overrides → CLICK dark palette ── */
+  --background:          #09090B;
+  --foreground:          #FAFAFA;
+  --card:                #18181B;
+  --card-foreground:     #FAFAFA;
+  --popover:             #18181B;
+  --popover-foreground:  #FAFAFA;
+  --primary:             #1D6FF2;
+  --primary-foreground:  #FFFFFF;
+  --secondary:           #27272A;
+  --secondary-foreground:#FAFAFA;
+  --muted:               #27272A;
+  --muted-foreground:    #A1A1AA;
+  --accent:              #27272A;
+  --accent-foreground:   #FAFAFA;
+  --destructive:         #EF4444;
+  --border:              rgba(63, 63, 70, 0.60);
+  --input:               rgba(63, 63, 70, 0.60);
+  --ring:                rgba(29, 111, 242, 0.40);
+  --radius:              0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    background-color: var(--cl-canvas);
+    color: var(--cl-text-primary);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+  html {
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+  }
+}
+
+/* ─── Skeleton shimmer ───────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--cl-surface-raised) 25%,
+    rgba(255, 255, 255, 0.04) 50%,
+    var(--cl-surface-raised) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 0.5rem;
+}
+
+/* ─── Active status pulse dot ────────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+.pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+/* ─── Rider position pulse ring ──────────────────────────────────────────── */
+@keyframes rider-pulse {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.rider-pulse {
+  animation: rider-pulse 2s ease-out infinite;
+}
+
+/* ─── Horizontal scroll no-scrollbar ─────────────────────────────────────── */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Safe area utility ───────────────────────────────────────────────────── */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ─── Product grid staggered reveal ──────────────────────────────────────── */
+/* 250ms, strong ease-out — cubic-bezier(0.23, 1, 0.32, 1) per emilkowal rules */
+@keyframes grid-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-ios:    cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ─── Order success checkmark ────────────────────────────────────────────── */
+@keyframes check-circle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes check-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ─── Hero glow float ────────────────────────────────────────────────────── */
+@keyframes glow-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50%       { transform: translateY(-8px) scale(1.04); opacity: 0.85; }
+}
+.glow-float {
+  animation: glow-float 6s ease-in-out infinite;
+}
+
+/* ─── Fade-up for page sections ──────────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fade-up 0.25s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* ─── Smooth text selection ──────────────────────────────────────────────── */
+::selection {
+  background: rgba(29, 111, 242, 0.25);
+  color: #FAFAFA;
+}
+
+/* ─── Focus ring override ────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--cl-accent);
+  outline-offset: 2px;
+}
+
+/* ─── Vertical scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cl-border); border-radius: 2px; }
+* { scrollbar-width: thin; scrollbar-color: var(--cl-border) transparent; }
+
+/* ─── Reduced motion — collapse all animations to instant crossfades ─────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
