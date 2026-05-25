@@ -3,9 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { advanceRider, advanceAmazonOrder } from "@/server/services/rider-simulator";
-
-const LOCAL_STATUSES = new Set(["ORDERED", "RIDER_ASSIGNED", "PICKING_UP", "ON_THE_WAY"]);
+import { advanceAmazonOrder } from "@/server/services/rider-simulator";
 
 async function requireAdmin() {
   const session = await auth();
@@ -19,16 +17,14 @@ export async function advanceOrderAction(
 
   const order = await db.order.findUnique({
     where: { id: orderId },
-    select: { status: true, riderTracking: { select: { id: true } } },
+    select: { status: true },
   });
   if (!order) return { ok: false, error: "Pedido no encontrado." };
 
-  const isLocal = order.riderTracking !== null || LOCAL_STATUSES.has(order.status);
-  const result = isLocal ? await advanceRider(orderId) : await advanceAmazonOrder(orderId);
+  const result = await advanceAmazonOrder(orderId);
 
   if (result.ok) {
     revalidatePath("/admin/orders");
-    revalidatePath("/admin/riders");
   }
   return result;
 }

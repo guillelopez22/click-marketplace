@@ -53,7 +53,6 @@ export const es = {
   // Source badges
   badge: {
     AMAZON: "Amazon USA",
-    LOCAL: "Tienda local",
   },
 
   // Cart

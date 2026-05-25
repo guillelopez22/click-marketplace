@@ -7,7 +7,6 @@ import { CheckoutSchema } from "@/lib/schemas/order";
 import { CartItemSchema } from "@/lib/schemas/cart";
 import { computeCartTotals } from "@/lib/cart-math";
 import { Decimal } from "@prisma/client/runtime/library";
-import { STORE_COORDS } from "@/lib/geo";
 
 const CheckoutPayloadSchema = z.object({
   input: CheckoutSchema,
@@ -29,7 +28,6 @@ export async function checkoutAction(
 
   const { input, items } = parsed.data;
 
-  // Re-compute totals server-side — client totals are for display only
   const mathItems = items.map((i) => ({
     priceHNL: new Decimal(i.priceHNL),
     qty: i.qty,
@@ -60,15 +58,6 @@ export async function checkoutAction(
       },
     },
   });
-
-  // Seed RiderTracking for local orders (rider starts at the store)
-  const hasLocal = items.some((i) => i.sourceType === "LOCAL");
-  if (hasLocal) {
-    const coords = STORE_COORDS[input.city];
-    await db.riderTracking.create({
-      data: { orderId: order.id, lat: coords.lat, lng: coords.lng, heading: 0 },
-    });
-  }
 
   return { orderId: order.id };
 }

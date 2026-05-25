@@ -10,13 +10,6 @@ export async function getFeaturedBySource(source: ProductSource, take = 10): Pro
 }
 
 export async function getProductsByCategory(category: string, limit = 40): Promise<Product[]> {
-  if (category === "Supermercado") {
-    return db.product.findMany({
-      where: { active: true, sourceType: "LOCAL" },
-      orderBy: { priceHNL: "asc" },
-      take: limit,
-    });
-  }
   return db.product.findMany({
     where: { active: true, category },
     orderBy: { priceHNL: "asc" },

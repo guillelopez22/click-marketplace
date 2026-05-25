@@ -187,6 +187,30 @@
   animation: glow-float 6s ease-in-out infinite;
 }
 
+/* ─── Landing page — Catracha light palette ──────────────────────────────── */
+.lp-root {
+  --lp-paper:       #F1F6F8;
+  --lp-paper2:      #E2EDF0;
+  --lp-surface:     #FFFFFF;
+  --lp-ink:         #071A2A;
+  --lp-ink2:        #1A2D3D;
+  --lp-ink3:        #506676;
+  --lp-ink4:        #90A2B0;
+  --lp-line:        #DCE6EB;
+  --lp-line2:       #BFCED6;
+  --lp-accent:      #0F9DBE;
+  --lp-accent2:     #0A7A95;
+  --lp-accent-tint: #C9E8F0;
+  --lp-jade:        #0E6B45;
+  --lp-jade2:       #08512F;
+  --lp-jade-tint:   #CDE5D8;
+}
+
+@keyframes lp-pulse-dot {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
 /* ─── Fade-up for page sections ──────────────────────────────────────────── */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(12px); }
@@ -213,6 +237,156 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--cl-border); border-radius: 2px; }
 * { scrollbar-width: thin; scrollbar-color: var(--cl-border) transparent; }
+
+/* ─── Landing section — responsive layout helpers ───────────────────────── */
+
+/* Nav visibility */
+.lp-nav-utility   { display: block; }
+.lp-nav-cats      { display: block; }
+.lp-search-full   { display: flex !important; }
+.lp-search-icon   { display: none !important; }
+.lp-hamburger     { display: none !important; }
+.lp-mobile-drawer { display: none; }
+.lp-nav-account   { display: flex; }
+.lp-nav-divider   { display: block; }
+.lp-nav-cart-labels { display: block; }
+
+/* Page-level wrappers */
+.lp-page-wrap { padding: 24px 36px 48px; }
+.lp-inner-pad { padding-left: 36px; padding-right: 36px; }
+
+/* Grid patterns */
+.lp-2col    { display: grid; grid-template-columns: 1.5fr 1fr;      gap: 32px; align-items: flex-start; }
+.lp-sidebar { display: grid; grid-template-columns: 260px 1fr;      gap: 28px; align-items: flex-start; }
+.lp-acct    { display: grid; grid-template-columns: 240px 1fr;      gap: 32px; align-items: flex-start; }
+.lp-4col    { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.lp-3col    { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.lp-2col-eq { display: grid; grid-template-columns: 1fr 1fr;        gap: 14px; }
+.lp-footer-cols { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 48px; }
+
+/* Mobile-only elements — hidden on desktop */
+.lp-show-m     { display: none; }
+.lp-cat-grid-m { display: none; }
+
+@media (max-width: 768px) {
+  /* Nav */
+  .lp-nav-utility    { display: none; }
+  .lp-nav-cats       { display: none; }
+  .lp-search-full    { display: none !important; }
+  .lp-search-icon    { display: flex !important; }
+  .lp-hamburger      { display: flex !important; }
+  .lp-mobile-drawer  { display: block; }
+  .lp-nav-main-row   { padding: 10px 16px !important; }
+  .lp-nav-account    { display: none; }
+  .lp-nav-divider    { display: none; }
+  .lp-nav-cart-labels { display: none; }
+
+  /* Page wrappers */
+  .lp-page-wrap  { padding: 16px 16px 40px; }
+  .lp-inner-pad  { padding-left: 16px; padding-right: 16px; }
+
+  /* Grids */
+  .lp-2col    { grid-template-columns: 1fr;        gap: 20px; }
+  .lp-sidebar { grid-template-columns: 1fr; }
+  .lp-acct    { grid-template-columns: 1fr; }
+  .lp-4col    { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .lp-3col    { grid-template-columns: 1fr 1fr;    gap: 12px; }
+  .lp-footer-cols { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .lp-orders-row  { grid-template-columns: 1fr auto !important; }
+  .lp-2col-eq { grid-template-columns: 1fr; }
+
+  /* Utilities */
+  .lp-hide-m  { display: none !important; }
+  .lp-show-m  { display: flex !important; }
+  .lp-full-m  { width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
+  .lp-order-last { order: 10; }
+
+  /* Mobile category icon grid */
+  .lp-cat-grid-m {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    padding-bottom: 16px;
+  }
+
+  /* Section heading size reduction */
+  .lp-section-title { font-size: 20px !important; letter-spacing: -0.4px !important; }
+
+  /* Hero panels — horizontal scroll on mobile */
+  .lp-hero-panels-grid {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+    margin-bottom: 14px !important;
+  }
+  .lp-hero-panels-grid::-webkit-scrollbar { display: none; }
+  .lp-hero-panels-grid > * { flex: 0 0 240px; height: 340px !important; }
+
+  /* Browse panels — horizontal scroll on mobile */
+  .lp-browse-grid {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+    margin-bottom: 28px !important;
+  }
+  .lp-browse-grid::-webkit-scrollbar { display: none; }
+  .lp-browse-grid > * { flex: 0 0 220px; height: auto !important; }
+
+  /* Product rail grid — horizontal scroll on mobile */
+  .lp-rail-grid {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+  }
+  .lp-rail-grid::-webkit-scrollbar { display: none; }
+  .lp-rail-grid > * { flex: 0 0 148px; }
+
+  /* Trust strip — stacked vertically */
+  .lp-trust-strip-grid { grid-template-columns: 1fr !important; gap: 0 !important; padding: 0 !important; }
+  .lp-trust-strip-item {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-right: none !important;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    border-bottom: 1px solid var(--lp-line);
+  }
+  .lp-trust-strip-item:first-child { padding-top: 0 !important; }
+  .lp-trust-strip-item:last-child  { border-bottom: none !important; padding-bottom: 0 !important; }
+
+  /* Social proof grid — horizontal scroll */
+  .lp-proof-grid {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+  }
+  .lp-proof-grid::-webkit-scrollbar { display: none; }
+  .lp-proof-grid > * { flex: 0 0 180px; }
+
+  /* How it works — horizontal scroll */
+  .lp-how-grid {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+  }
+  .lp-how-grid::-webkit-scrollbar { display: none; }
+  .lp-how-grid > * { flex: 0 0 200px; }
+}
 
 /* ─── Reduced motion — collapse all animations to instant crossfades ─────── */
 @media (prefers-reduced-motion: reduce) {

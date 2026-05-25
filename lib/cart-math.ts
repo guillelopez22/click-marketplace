@@ -17,44 +17,25 @@ export interface CartTotals {
   total: Decimal;
 }
 
-const DELIVERY_LOCAL = new Decimal("50");
 const DELIVERY_AMAZON = new Decimal("200");
-const IMPORT_FEE_RATE = new Decimal("0.15"); // 15% on Amazon subtotal
-const ISV_RATE = new Decimal("0.15"); // Honduras ISV tax
+const IMPORT_FEE_RATE = new Decimal("0.15");
+const ISV_RATE = new Decimal("0.15");
 
 export function computeCartTotals(items: CartItem[], city?: City): CartTotals {
-  void city; // accepted for future per-city fee variation
-  const amazonItems = items.filter((i) => i.sourceType === "AMAZON");
-  const localItems = items.filter((i) => i.sourceType === "LOCAL");
+  void city;
 
-  const amazonSubtotal = amazonItems.reduce(
-    (sum, i) => sum.plus(i.priceHNL.mul(i.qty)),
-    new Decimal(0)
-  );
-  const localSubtotal = localItems.reduce(
-    (sum, i) => sum.plus(i.priceHNL.mul(i.qty)),
-    new Decimal(0)
-  );
+  const subtotal = items
+    .reduce((sum, i) => sum.plus(i.priceHNL.mul(i.qty)), new Decimal(0))
+    .toDecimalPlaces(2);
 
-  const subtotal = amazonSubtotal.plus(localSubtotal);
-
-  const deliveryFee = (amazonItems.length > 0 ? DELIVERY_AMAZON : new Decimal(0)).plus(
-    localItems.length > 0 ? DELIVERY_LOCAL : new Decimal(0)
-  );
-
-  const importFee = amazonSubtotal.mul(IMPORT_FEE_RATE).toDecimalPlaces(2);
+  const deliveryFee = items.length > 0 ? DELIVERY_AMAZON : new Decimal(0);
+  const importFee = subtotal.mul(IMPORT_FEE_RATE).toDecimalPlaces(2);
   const taxes = subtotal
     .plus(deliveryFee)
     .plus(importFee)
     .mul(ISV_RATE)
     .toDecimalPlaces(2);
-  const total = subtotal.plus(deliveryFee).plus(importFee).plus(taxes);
+  const total = subtotal.plus(deliveryFee).plus(importFee).plus(taxes).toDecimalPlaces(2);
 
-  return {
-    subtotal: subtotal.toDecimalPlaces(2),
-    deliveryFee: deliveryFee.toDecimalPlaces(2),
-    importFee,
-    taxes,
-    total: total.toDecimalPlaces(2),
-  };
+  return { subtotal, deliveryFee, importFee, taxes, total };
 }
